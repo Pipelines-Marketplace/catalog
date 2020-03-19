@@ -2,6 +2,8 @@ apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: ansible-tower-cli
+annotations:
+  tags: build-tool
 spec:
   inputs:
     params:

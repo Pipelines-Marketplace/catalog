@@ -2,6 +2,8 @@ apiVersion: tekton.dev/v1alpha1
 kind: Task
 metadata:
   name: az
+annotations:
+  tags: cli
 spec:
   inputs:
     params:
