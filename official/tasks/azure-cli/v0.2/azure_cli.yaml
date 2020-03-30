@@ -3,6 +3,7 @@ kind: Task
 metadata:
   name: az
 annotations:
+  description: This task performs operations on Microsoft Azure resources using az.
   tags: cli
 spec:
   inputs:
