@@ -5,6 +5,7 @@ metadata:
 annotations:
   description: This task syncs (deploys) an Argo CD application and waits for it to be healthy. To do so, it requires the address of the Argo CD server and some form of authentication - either a username/password or an authentication token.
   tags: deploy
+  version: v0.1
 spec:
   inputs:
     params:
