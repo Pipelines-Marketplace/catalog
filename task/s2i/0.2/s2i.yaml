@@ -4,7 +4,7 @@ metadata:
   name: s2i
   annotations:
     tags: image-build
-    version: 0.2
+    version: "0.2"
 spec:
   description: >
     S2I Task builds source into a container image.

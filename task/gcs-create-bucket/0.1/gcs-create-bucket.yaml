@@ -4,7 +4,7 @@ metadata:
   name: gcs-create-bucket
   annotations:
     tags: cloud
-    version: 0.1
+    version: "0.1"
 spec:
   description: >
     A Task that creates a new GCS bucket.

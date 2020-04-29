@@ -4,7 +4,7 @@ metadata:
   name: gcs-upload
   annotations:
     tags: cloud
-    version: 0.1
+    version: "0.1"
 spec:
   description: >
     A Task that uploads files or directories from a Workspace to a GCS bucket.

@@ -5,7 +5,7 @@ metadata:
   name: buildah
   annotations:
     tags: image-build
-    version: 0.2
+    version: "0.2"
 spec:
   description: >
     Buildah task builds source into a container image and

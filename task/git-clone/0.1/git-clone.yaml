@@ -4,7 +4,7 @@ metadata:
   name: git-clone
   annotations:
     tags: git
-    version: 0.1
+    version: "0.1"
 spec:
   description: >
     Git-clone Tasks are Git tasks to work with repositories used by other

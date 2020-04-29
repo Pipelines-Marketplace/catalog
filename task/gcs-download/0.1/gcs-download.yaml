@@ -4,7 +4,7 @@ metadata:
   name: gcs-download
   annotations:
     tags: cloud
-    version: 0.1
+    version: "0.1"
 spec:
  description: >
     A Task that fetches files or directories from a GCS bucket and

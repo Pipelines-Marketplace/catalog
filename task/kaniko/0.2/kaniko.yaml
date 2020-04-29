@@ -4,7 +4,7 @@ metadata:
   name: kaniko
   annotations:
     tags: image-build
-    version: 0.2
+    version: "0.2"
 spec:
   description: >
     This Task builds source into a container image using Google's kaniko tool.
