@@ -3,8 +3,9 @@ kind: Task
 metadata:
   name: git-clone
   annotations:
-    tags: git
+    tags: git,scm
     version: "0.1"
+    displayName: "git clone"
 spec:
   description: >-
     Git-clone Tasks are Git tasks to work with repositories used by other
