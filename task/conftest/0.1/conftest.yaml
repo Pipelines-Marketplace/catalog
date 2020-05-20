@@ -5,7 +5,7 @@ metadata:
   annotations:
     tags: test
     version: "0.1"
-    displayName: conftest
+    displayName: "conftest"
 spec:
   description: >-
     These tasks make it possible to use Conftest within your Tekton pipelines

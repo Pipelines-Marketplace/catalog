@@ -6,7 +6,7 @@ metadata:
   annotations:
     tags: image-build
     version: "0.1"
-    displayName: buildpacks
+    displayName: "buildpacks"
 spec:
   description: >-
     This build template builds source into a container image using Cloud Native Buildpacks.

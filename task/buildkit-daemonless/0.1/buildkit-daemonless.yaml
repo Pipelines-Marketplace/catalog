@@ -5,7 +5,7 @@ metadata:
   annotations:
     tags: image-build
     version: "0.1"
-    displayName: buildkit daemonless
+    displayName: "buildkit daemonless"
 spec:
   description: >-
     This Task builds source into a container image using Moby BuildKit.
