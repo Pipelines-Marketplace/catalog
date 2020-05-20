@@ -1,0 +1,149 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: buildpacks-v3
+  annotations:
+    tags: image-build
+    version: "0.1"
+    displayName: buildpacks
+spec:
+  description: >-
+    This build template builds source into a container image using Cloud Native Buildpacks.
+
+    The Cloud Native Buildpacks website describes v3 buildpacks as pluggable, modular tools
+    that translate source code into container-ready artifacts such as OCI images. They replace
+    Dockerfiles in the app development lifecycle with a higher level of abstraction. Cloud
+    Native Buildpacks embrace modern container standards, such as the OCI image format. They take
+    advantage of the latest capabilities of these standards, such as remote image layer
+    rebasing on Docker API v2 registries.
+
+  params:
+    - name: BUILDER_IMAGE
+      description: The image on which builds will run (must include v3 lifecycle and compatible buildpacks).
+    - name: USE_CRED_HELPERS
+      description: Use Docker credential helpers for Google's GCR, Amazon's ECR, or Microsoft's ACR.
+      default: "false"
+    - name: CACHE
+      description: The name of the persistent app cache volume
+      default: empty-dir
+    - name: USER_ID
+      description: The user ID of the builder image user
+      default: "1000"
+    - name: GROUP_ID
+      description: The group ID of the builder image user
+      default: "1000"
+    - name: SOURCE_SUBPATH
+      description: A subpath within the `source` input where the source to build is located.
+      default: ""
+
+  resources:
+    outputs:
+      - name: image
+        type: image
+
+  workspaces:
+    - name: source
+
+  stepTemplate:
+    env:
+      - name: CNB_PLATFORM_API
+        value: "0.2"
+
+  steps:
+    - name: prepare
+      image: alpine
+      imagePullPolicy: Always
+      command: ["/bin/sh"]
+      args:
+        - "-c"
+        - >
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/tekton/home" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/layers" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "/cache" &&
+          chown -R "$(params.USER_ID):$(params.GROUP_ID)" "$(workspaces.source.path)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.CACHE)
+          mountPath: /cache
+      securityContext:
+        privileged: true
+
+    - name: detect
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/detector"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: analyze
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/analyzer"]
+      args:
+        - "-layers=/layers"
+        - "-helpers=$(params.USE_CRED_HELPERS)"
+        - "-group=/layers/group.toml"
+        - "-cache-dir=/cache"
+        - "$(resources.outputs.image.url)"
+      volumeMounts:
+        - name: $(params.CACHE)
+          mountPath: /cache
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: restore
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/restorer"]
+      args:
+        - "-group=/layers/group.toml"
+        - "-layers=/layers"
+        - "-cache-dir=/cache"
+      volumeMounts:
+        - name: $(params.CACHE)
+          mountPath: /cache
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: build
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/builder"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=/layers"
+        - "-group=/layers/group.toml"
+        - "-plan=/layers/plan.toml"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+
+    - name: export
+      image: $(params.BUILDER_IMAGE)
+      imagePullPolicy: Always
+      command: ["/cnb/lifecycle/exporter"]
+      args:
+        - "-app=$(workspaces.source.path)/$(params.SOURCE_SUBPATH)"
+        - "-layers=/layers"
+        - "-helpers=$(params.USE_CRED_HELPERS)"
+        - "-group=/layers/group.toml"
+        - "-cache-dir=/cache"
+        - "$(resources.outputs.image.url)"
+      volumeMounts:
+        - name: layers-dir
+          mountPath: /layers
+        - name: $(params.CACHE)
+          mountPath: /cache
+
+  volumes:
+    - name: empty-dir
+      emptyDir: {}
+    - name: layers-dir
+      emptyDir: {}
