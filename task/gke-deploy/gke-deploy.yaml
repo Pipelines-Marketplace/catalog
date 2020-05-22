@@ -1,0 +1,26 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gke-deploy
+  annotations:
+    tags: deploy
+    version: "0.1"
+    displayName: "gke deploy"
+spec:
+  description: >-
+    This Task deploys an application to a Google Kubernetes Engine
+    cluster using gke-deploy
+
+  workspaces:
+    - name: source
+  params:
+    - name: ARGS
+      type: array
+      description: gke-deploy CLI arguments to run
+      default: ["--help"]
+  steps:
+    - name: gke-deploy
+      image: gcr.io/cloud-builders/gke-deploy
+      command: ["/gke-deploy"]
+      workingDir: $(workspaces.source.path)
+      args: ["$(params.ARGS)"]
