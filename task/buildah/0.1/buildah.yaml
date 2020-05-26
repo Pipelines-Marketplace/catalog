@@ -3,11 +3,14 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: buildah
+  labels:
+    app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
     tags: image-build
-    version: "0.1"
+    displayName: "buildah"
 spec:
-  description: >
+  description: >-
     Buildah task builds source into a container image and
     then pushes it to a container registry.
 
@@ -23,6 +26,9 @@ spec:
     - name: BUILDER_IMAGE
       description: The location of the buildah builder image.
       default: quay.io/buildah/stable:v1.14.8
+    - name: STORAGE_DRIVER
+      description: Set buildah storage driver
+      default: overlay
     - name: DOCKERFILE
       description: Path to the Dockerfile to build.
       default: ./Dockerfile
@@ -49,6 +55,7 @@ spec:
       command:
         [
           "buildah",
+          "--storage-driver=$(params.STORAGE_DRIVER)",
           "bud",
           "--format=$(params.FORMAT)",
           "--tls-verify=$(params.TLSVERIFY)",
@@ -71,6 +78,7 @@ spec:
       command:
         [
           "buildah",
+          "--storage-driver=$(params.STORAGE_DRIVER)",
           "push",
           "--tls-verify=$(params.TLSVERIFY)",
           "--digestfile",
