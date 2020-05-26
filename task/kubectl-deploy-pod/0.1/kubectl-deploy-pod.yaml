@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: kubectl-deploy-pod
+  labels:
+    app.kubernetes.io/version: "0.1"
+  annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tags: deploy, delete
+    displayName: "kubectl deploy pod"
+  namespace: default
+spec:
+  description: >-
+    This Task deploys (or delete) a Kubernates resource (pod). It uses
+    kubectl for that.
+
+  params:
+    - name: manifest
+      description: Content of the resource to deploy
+    - name: image
+      default: gcr.io/cloud-builders/kubectl # it is huge
+      description: Kubectl wrapper image
+  steps:
+    - name: kubeconfig
+      image: $(params.image)
+      script: |
+        echo "$(params.manifest)" > /tmp/resource.yaml
+        kubectl create -f /tmp/resource.yaml
