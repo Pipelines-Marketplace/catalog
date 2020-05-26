@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: openshift-client-python
+  annotations:
+    tags: cli
+    version: "0.1"
+    dislayName: "openshift client python"
+spec:
+  description: >-
+    This task can be used to interact with the openshift cluster via
+    oc commands in a python script.
+
+    OpenShift is a Kubernetes distribution from Red Hat which provides oc,
+    the OpenShift CLI that complements kubectl for simplifying deployment
+    and configuration applications on OpenShift.
+
+  workspaces:
+    - name: kubeconfig-mount
+      mountPath: /tekton/home/.kube
+  params:
+    - name: SCRIPT
+      description: Python script to be executed
+      type: string
+      default: |
+        #!/usr/bin/python
+
+        import openshift as oc
+
+        print('OpenShift client version: {}'.format(oc.get_client_version()))
+        print('OpenShift server version: {}'.format(oc.get_server_version()))
+  steps:
+    - name: execute-script
+      image: quay.io/vinamra2807/openshift-client-python:latest
+      script: $(params.SCRIPT)
