@@ -2,9 +2,11 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: gitlab-add-label
+  labels:
+    app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
     tags: gitlab
-    version: "0.1"
     displayName: "gitlab add label"
   description: |
     This Task will add a label to an issue in Gitlab.

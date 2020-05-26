@@ -2,9 +2,11 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: git-batch-merge
+  labels:
+    app.kubernetes.io/version: "0.1"
   annotations:
     tags: git
-    version: "0.1"
+    tekton.dev/pipelines.minVersion: "0.12.1"
     displayName: "git batch merge"
 spec:
   description: >-

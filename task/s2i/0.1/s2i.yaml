@@ -2,9 +2,11 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: s2i
+  labels:
+    app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
     tags: image-build
-    version: "0.1"
 spec:
   description:
     This Task builds source into a container image using Google's kaniko tool.

@@ -2,9 +2,11 @@ apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: sendmail
+  labels:
+    app.kubernetes.io/version: "0.1"
   annotations:
+    tekton.dev/pipelines.minVersion: "0.12.1"
     tags: mail
-    version: "0.1"
     displayName: "send mail"
 spec:
   description: >-
